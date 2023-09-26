@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommentService", "Services\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostService", "Services\ServicePost\PostService.csproj", "{04B9EBB8-890C-4810-89A9-FBA9735EB2CD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WriterFrontEnd", "FrontEnd\WriterFrontEnd\WriterFrontEnd.csproj", "{6C4D9E97-80CC-4860-B515-6D17E78785DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{04B9EBB8-890C-4810-89A9-FBA9735EB2CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04B9EBB8-890C-4810-89A9-FBA9735EB2CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04B9EBB8-890C-4810-89A9-FBA9735EB2CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C4D9E97-80CC-4860-B515-6D17E78785DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C4D9E97-80CC-4860-B515-6D17E78785DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C4D9E97-80CC-4860-B515-6D17E78785DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C4D9E97-80CC-4860-B515-6D17E78785DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +54,7 @@ Global
 		{87D79F86-67FD-49EB-A8CB-F3994D7262AE} = {9356CDCF-56EB-4893-9140-81C39303D175}
 		{317245F4-2EC0-48BF-A866-8052DFE629A4} = {9356CDCF-56EB-4893-9140-81C39303D175}
 		{04B9EBB8-890C-4810-89A9-FBA9735EB2CD} = {9356CDCF-56EB-4893-9140-81C39303D175}
+		{6C4D9E97-80CC-4860-B515-6D17E78785DC} = {C6B8D2B0-F5B4-4938-B926-130D2C29093E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4049A0CB-AE2F-454F-B270-7C219B869A15}

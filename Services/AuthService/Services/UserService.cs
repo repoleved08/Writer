@@ -27,20 +27,22 @@ namespace AuthService.Services
         }
 
 
-        public async Task<string> LoginUser(LoginDto loginDto)
+        public async Task<LoginResponseDto> LoginUser(LoginDto loginDto)
         {
-           var user = await _appDbContext.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email);
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email);
             if (user == null)
             {
                 throw new Exception("User not found!");
-              }
+            }
             else
             {
                 var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
                 if (result)
                 {
                     var roles = await _userManager.GetRolesAsync(user);
-                    return _tokenGenerator.GenerateToken(user, roles);
+                    var token = _tokenGenerator.GenerateToken(user, roles);
+                    var userDto = _mapper.Map<UserDto>(user); // Use AutoMapper to map User to UserDto
+                    return new LoginResponseDto { User = userDto, Token = token };
                 }
                 else
                 {
@@ -78,7 +80,7 @@ namespace AuthService.Services
                 var client = _clientFactory.CreateClient("Posts");
                 var response = await client.GetAsync("api/Post");
                 var content = await response.Content.ReadAsStringAsync();
-                var posts = JsonConvert.DeserializeObject<responsedto>(content);
+                var posts = JsonConvert.DeserializeObject<ResponseDto>(content);
              if(posts.IsSuccess)
                 {
                     return JsonConvert.DeserializeObject<IEnumerable<PostDto>>(posts.Result.ToString());

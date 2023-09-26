@@ -1,0 +1,111 @@
+﻿@page "/"
+
+@inject IJSRuntime jsRuntime
+@using Newtonsoft.Json
+@*@inject IPostInterface postInterface*@
+@inject NavigationManager navManager
+<PageTitle>Index</PageTitle>
+
+<div class="container mt-5">
+    @if (isLoading)
+    {
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        @if (authenticated && role == "User")
+        {
+            <div class="row mb-4">
+                <div class="col-6">
+                    Posts
+                </div>
+                <div class="col-6 text-end">
+                    <a href="/addpost" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> &nbsp; Add Post
+                    </a>
+                </div>
+            </div>
+        }
+
+        @if (posts.Count == 0)
+        {
+            <p><i>No Posts Available</i></p>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var post in posts)
+                {
+                    <div class="col-3">
+                        <div class="card mb-3">
+                            <div class="card-body" @* @onclick="() => showPost(post.PostId)" *@>
+                                <h5 class="card-title">@post.Title</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">@* @post.Body *@</h6>
+                                <div>
+                                    @if (authenticated)
+                                    {
+
+                                        if (IsPostOwner(post))
+                                        {
+                                            <button class="btn btn-danger" @* @onclick="() => deletePost(post.PostId)" *@>Delete</button>
+
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private List<Post> posts = new List<Post>();
+    public Post post { get; set; }
+    private bool isLoading = true;
+    private string role { get; set; }
+    public string user { get; set; }
+    private bool authenticated { get; set; }
+
+
+
+    [CascadingParameter]
+    public Task<AuthenticationState> _authState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var authState = await _authState;
+        role = authState.User.FindFirst("role")?.Value;
+        user = authState.User.FindFirst("sub")?.Value;
+        authenticated = authState.User.Identity.IsAuthenticated;
+        //posts = await postInterface.GetPostsAsync();
+        isLoading = false;
+
+
+    }
+
+    private async Task showPost(Guid Id)
+    {
+        navManager.NavigateTo($"posts/{Id}");
+    }
+
+    // private async Task deletePost(Guid id)
+    // {
+
+    //     await postInterface.DeletePost(id);
+    // }
+    private bool IsPostOwner(Post post)
+    {
+
+        // Check if the currently authenticated user is the owner of the post
+        return authenticated && post.UserId.ToString() == user;
+
+    }
+}
