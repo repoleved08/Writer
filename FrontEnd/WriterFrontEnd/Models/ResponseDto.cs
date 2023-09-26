@@ -1,4 +1,4 @@
-﻿namespace AuthService.Models.ResponseDto
+﻿namespace WriterFrontEnd.Models
 {
     public class ResponseDto
     {

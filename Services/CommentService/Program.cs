@@ -24,8 +24,6 @@ builder.Services.AddScoped<ICommentInterface, CommentServices>();
 
 //Register AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-//Adding cors
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
@@ -34,7 +32,6 @@ builder.Services.AddCors(options =>
         AllowAnyMethod());
 
 });
-
 //custom builder services
 builder.AddAppAuthentication();
 builder.AddSwaggenGenExtension();
