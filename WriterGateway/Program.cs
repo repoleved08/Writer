@@ -1,6 +1,6 @@
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
-using SocialMedia_Gateway.Extensions;
+using WriterGateway.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 //checking for Token
