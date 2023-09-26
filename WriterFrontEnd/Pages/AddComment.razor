@@ -1,0 +1,52 @@
+﻿@page "/addcomment/{id}"
+
+@inject ICommentInterface commentInterface
+@using WriterFrontEnd.Models.Comments
+@inject NavigationManager navManager
+@inject IPostInterface postInterface
+
+<div class="container mt-5">
+    <div class="row justify-content-lg-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title">Add Comment</h1>
+                    <div class="form-group">
+                        <label for="commentContent">Comment Content</label>
+                        <textarea class="form-control" id="commentContent" rows="4" @bind="@newComment.Body"></textarea>
+                    </div>
+
+                    <button class="btn btn-primary mt-2" @onclick="()=>Add_Comment()">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        margin-top: 50px;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public EventCallback<CommentRequestDto> AddNewComment { get; set; }
+
+    public Comment newComment = new Comment();
+    [Parameter]
+    public string id { get; set; }
+
+    public async Task Add_Comment()
+    {
+        CommentRequestDto newCommentRequest = new CommentRequestDto
+            {
+                Body = newComment.Body,
+                PostId = Guid.Parse(id)
+            };
+
+        var res = await commentInterface.AddCommentAsync(newCommentRequest);
+
+        navManager.NavigateTo($"/posts/{id}");
+    }
+}

@@ -1,0 +1,261 @@
+﻿@page "/posts"
+
+@using WriterFrontEnd.Models.Comments
+@inject IPostInterface postInterface
+@inject ICommentInterface commentInterface
+@inject IJSRuntime JSRuntime
+@inject NavigationManager navmanager
+
+<div class="container mt-5">
+    @if (posts == null)
+    {
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading posts...</span>
+            </div>
+        </div>
+    }
+    else if (posts.Any())
+    {
+        @foreach (var post in posts)
+        {
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title">@post.Title</h4>
+                    <p class="card-text">@post.Body</p>
+                    <p class="card-text"><small class="text-muted">@post.DateCreated</small></p>
+                    
+                    
+                        <div class="btn-group" role="group" aria-label="Post Actions">
+                            @if (!userHasLikedPost)
+                            {
+                                <button type="button" class="btn btn-primary" @onclick="()=>LikePost(post.PostId)">
+                                    <i class="fas fa-thumbs-up"></i> Like
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-primary" @onclick="()=>UnLikePost(post.PostId)">
+                                    <i class="fas fa-thumbs-down"></i> Unlike
+                                </button>
+                            }
+                            <span class="btn btn-outline-primary">@post.Likes </span>
+                        </div>
+
+                    @if (authenticated)
+                    {
+
+                        if (IsPostOwner(post))
+                        {
+
+
+                            <button type="button" class="btn btn-danger mt-3" @onclick="() => DeletePost(post.PostId)">Delete Post</button>
+                        }
+                    }
+                        <button type="button" class="btn btn-primary mt-3" @onclick="() => AddComment(post.PostId)">Add Comment</button>
+                </div>
+
+                <div class="card-footer">
+                    <h5 class="card-title">Comments:</h5>
+                    @if (comments != null)
+                    {
+                        @foreach (var comment in comments)
+                        {
+                            if (comment.PostId == post.PostId)
+                            {
+                                <div class="card mt-3">
+                                    <div class="card-body">
+                                        <p class="card-text">@comment.Body</p>
+                                        <p class="card-text"><small class="text-muted">@comment.DateCreated</small></p>
+                                        
+                                        </div>
+                                    </div>
+                              
+                                
+                            }
+                        <div class="btn-group" role="group" aria-label="Post Actions">
+                                @if (authenticated)
+                                {
+
+                                    if (IsCommentOwner(comment))
+                                    {
+                                    <button class="btn btn-danger" @onclick="(()=>DeleteComment(comment.PostId))">Delete</button>
+                                    }
+                                }
+                        </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-center">No posts found.</p>
+    }
+</div>
+
+
+
+@code {
+
+    [Parameter]
+    public CommentRequestDto commentDto { get; set; }
+    private List<Comment> comments = new List<Comment>();
+    public string user { get; set; }
+   // [CascadingParameter]
+    //public Task<AuthenticationState> _authState { get; set; }
+
+
+
+    private List<Post> posts;
+    private Guid postToDeleteId;
+    private Guid commentToBeAdded;
+
+
+    private string newCommentContent = string.Empty;
+
+
+
+    private string TagToSearch = string.Empty;
+
+    private bool authenticated { get; set; }
+    private bool userHasLikedPost = false;
+    private string role { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        //var authState = await _authState;
+       // role = authState.User.FindFirst("role")?.Value;
+        //user = authState.User.FindFirst("sub")?.Value;
+       // authenticated = authState.User.Identity.IsAuthenticated;
+
+        posts = await postInterface.GetPostsAsync(); 
+
+
+
+        // Fetch all comments for the post
+        comments = await commentInterface.GetCommentsAsync();
+
+        // Check if the user has already liked the post 
+        userHasLikedPost = await HasUserLikedPost(postToDeleteId);
+
+    }
+    public async Task AddNewPost()
+    {
+        // Create a new post using newPostTitle and newPostContent
+        PostRequestDto newPost = new PostRequestDto();
+
+
+        // Call your API service to add the new post
+        var result = await postInterface.AddPost(newPost);
+        await RefreshPosts();
+        navmanager.NavigateTo($"/post/{newPost}/comments");
+    }
+
+    public async Task AddComment(Guid id)
+    {
+        navmanager.NavigateTo($"/addcomment/{id}");
+    }
+
+
+
+
+
+    private async Task LikePost(Guid Id)
+    {
+        // Call ApiService to like the post
+        var res =await postInterface.LikePost(Id);
+        //Refresh the posts to update like counts
+        var postToUpdate = posts.FirstOrDefault(p => p.PostId ==Id);
+        if (authenticated && role == "User")
+        {
+            if (postToUpdate != null)
+            {
+                postToUpdate.Likes++;
+            }
+            userHasLikedPost = true;
+            StateHasChanged();
+        }
+
+
+    }
+
+    private async Task UnLikePost(Guid Id)
+    {
+        //// Call ApiService to dislike the post
+        var res =await postInterface.UnLikePost(Id);
+
+
+        //// Update the local post count
+        var postToUpdate = posts.FirstOrDefault(p => p.PostId == Id);
+        if (postToUpdate != null)
+        {
+            postToUpdate.UnLike--;
+        }
+        userHasLikedPost = false;
+
+        StateHasChanged();
+    }
+    private async Task<bool> HasUserLikedPost(Guid Id)
+    {
+        if(LikePost!=null){
+            var hasLiked = await postInterface.LikePost(Id);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private async Task RefreshPosts()
+    {
+        // Refresh the posts after liking/disliking
+        posts = await postInterface.GetPostsAsync();
+        StateHasChanged(); // Trigger UI update
+    }
+    private async Task FetchPostsByTag(string Tag)
+    {
+
+        //posts= await postInterface.GetPostByTagAsync(TagToSearch);
+        // Close the modal
+
+    }
+
+    private async  Task DeletePost(Guid id)
+    {
+        var res= await postInterface.DeletePost(id);
+        await RefreshPosts();
+
+
+    }
+    private async Task DeleteComment(Guid id)
+    {
+        var res= await commentInterface.DeleteCommentAsync(id);
+        comments = await commentInterface.GetCommentsAsync();
+        StateHasChanged();
+    }
+    private bool IsPostOwner(Post post)
+    {
+
+        // Check if the currently authenticated user is the owner of the post
+        return authenticated && post.UserId.ToString() == user;
+
+    }
+
+    private bool IsCommentOwner(Comment comment)
+    {
+        return authenticated && comment.UserId.ToString() == user;
+    }
+
+} 
+
+
+
+
+
+
+
+

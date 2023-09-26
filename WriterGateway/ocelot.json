@@ -1,0 +1,97 @@
+{
+  //configuration file
+
+
+  "Routes": [
+    {
+      //Posts
+
+      //Get Posts or AddPost
+      "DownstreamPathTemplate": "/api/Post", //redirection of received request
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost", //in Development
+          "Port": 7001
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Post", //receive
+      "UpstreamHttpMethod": [ "Get", "Post" ]
+    },
+
+    {
+      //Delete or Add Post
+      "DownstreamPathTemplate": "/api/Post?id={id}", //redirection of received request
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost", //in Development
+          "Port": 7001
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Post?id={id}", //receive
+      "UpstreamHttpMethod": [ "Delete", "Put" ]
+    },
+    {
+      //Get PostById
+      "DownstreamPathTemplate": "/api/Post/GetById/{Id}", //redirection of received request
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost", //in Development
+          "Port": 7001
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Post/GetById/{Id}", //receive
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      //Comments
+
+      //Get Comment or AddComment
+      "DownstreamPathTemplate": "/api/Comment", //redirection of received request
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost", //in Development
+          "Port": 7002
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Comment", //receive
+      "UpstreamHttpMethod": [ "Get", "Post" ]
+    },
+
+    {
+      //Delete Comment or Update Comment
+      "DownstreamPathTemplate": "/api/Comment?id={id}", //redirection of received request
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost", //in Development
+          "Port": 7002
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Comment?id={id}", //receive
+      "UpstreamHttpMethod": [ "Delete", "Put" ]
+    },
+    {
+      //Get CommentById
+      "DownstreamPathTemplate": "/api/Comment/GetById/={Id}", //redirection of received request
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost", //in Development
+          "Port": 7002
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Comment/GetById/={Id}", //receive
+      "UpstreamHttpMethod": [ "Get" ]
+    }
+  ],
+
+
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:7676" //API Gateway port
+  }
+}
+
