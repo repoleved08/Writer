@@ -1,0 +1,64 @@
+﻿@inject NavigationManager navManager
+@*@inject AuthenticationStateProvider authProvider*@
+@inject NavigationManager navigationManager
+@inject ILocalStorageService localStorage
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Writer</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/posts">Feed </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/addpost">Add New Post</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/">Home</NavLink>
+                </li>
+            </ul>
+        </div>
+        <div class="user-login">
+            <span>Welcome, @*@user.*@Username</span>
+            <AuthorizeView>
+                <Authorized>
+                    <button class="btn btn-dark" @onclick="logout">Logout</button>
+                </Authorized>
+                <NotAuthorized>
+                    <button class="btn btn-primary" @onclick="login">Login</button>
+                    <button class="btn btn-primary" @onclick="register">Register</button>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </div>
+</nav>
+
+<style>
+
+</style>
+
+@code {
+    //private LoginRequestDto user = new LoginRequestDto();
+
+    private void register()
+    {
+        navManager.NavigateTo("register");
+    }
+
+    private void login()
+    {
+        navManager.NavigateTo("login");
+    }
+
+    private async Task logout()
+    {
+        await localStorage.RemoveItemAsync("authToken");
+        //await authProvider.GetAuthenticationStateAsync();
+        navManager.NavigateTo("/");
+    }
+}

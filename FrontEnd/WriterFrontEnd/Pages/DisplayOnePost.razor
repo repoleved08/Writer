@@ -1,0 +1,104 @@
+﻿@page "/posts/{Id}"
+
+@using WriterFrontEnd.Models.Comments
+@inject IPostInterface postInterface
+@inject ICommentInterface commentInterface
+@inject NavigationManager navManager;
+
+<div class="container mt-5">
+    @if (isLoading)
+    {
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (post != null)
+    {
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">@post.Title</h5>
+                <p class="card-text">@post.Body</p>
+                <p class="card-text"><small class="text-muted">@post.DateCreated</small></p>
+
+                <div class="btn-group" role="group" aria-label="Post Actions">
+                    <button type="button" class="btn btn-primary" @onclick="LikePost">Like</button>
+                    <span class="btn btn-outline-primary">@post.Likes Likes</span>
+                    <button type="button" class="btn btn-primary" @onclick="UnLikePost">Unlike</button>
+                    <span class="btn btn-outline-primary">@post.UnLike UnLikes</span>
+                </div>
+                <AuthorizeView>
+                    <Authorized>
+                        <button type="button" class="btn btn-danger mt-3" @onclick="DeletePost">Delete Post</button>
+                    </Authorized>
+                </AuthorizeView>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        <p><i>Post not found.</i></p>
+    }
+</div>
+
+@code {
+    private Post post;
+    private bool isLoading = true;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPost();
+    }
+
+    private async Task LoadPost()
+    {
+
+        isLoading = true;
+        var postId = Guid.Parse(Id);
+        var res = await postInterface.GetPostByIdAsync(postId);
+        if (res != null)
+        {
+            post = res; // Update the post if found
+        }
+        isLoading = false;
+    }
+
+    private async Task LikePost()
+    {
+        // Call ApiService to like the post
+        var res = await postInterface.LikePost(Guid.Parse(Id));
+        if (post != null)
+        {
+            post.Likes++;
+        }
+        // Refresh the post to update like counts
+        StateHasChanged();
+
+    }
+
+    private async Task UnLikePost()
+    {
+        // Call ApiService to unlike the post
+        var res = await postInterface.UnLikePost(Guid.Parse(Id));
+        if (post != null)
+        {
+            post.UnLike++;
+        }
+        // Refresh the post to update like counts
+        StateHasChanged();
+
+
+    }
+
+    private async Task DeletePost()
+    {
+        var res = await postInterface.DeletePost(Guid.Parse(Id));
+        // Redirect to the posts list page after deletion
+        navManager.NavigateTo("/posts");
+    }
+}
