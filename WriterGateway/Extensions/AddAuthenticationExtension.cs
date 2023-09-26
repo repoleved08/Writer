@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace SocialMedia_Gateway.Extensions
+namespace WriterGateway.Extensions
 {
     public static class AddAuthenticationExtension
     {
