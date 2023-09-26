@@ -18,7 +18,7 @@ namespace AuthService.Controllers
     {
        private readonly IUserInterface _userInterface;
        private readonly IConfiguration _configuration;
-       private readonly responsedto _response;
+       private readonly ResponseDto _response;
        private readonly IMessageBus _messageBus;
 
 
@@ -27,11 +27,11 @@ namespace AuthService.Controllers
               _userInterface = userInterface;
             _configuration = configuration;
             _messageBus = messageBus;
-            _response = new responsedto();
+            _response = new ResponseDto();
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<responsedto>> AddUSer(RegistrationDto Registration)
+        public async Task<ActionResult<ResponseDto>> AddUSer(RegistrationDto Registration)
         {
             var message = await _userInterface.RegisterUser(Registration);
             if (message == "User created successfully!")
@@ -56,10 +56,8 @@ namespace AuthService.Controllers
             return Ok(_response);
         }
 
-
         [HttpPost("login")]
-
-        public async Task<ActionResult<responsedto>> LoginUser(LoginDto loginDto)
+        public async Task<ActionResult<ResponseDto>> LoginUser(LoginDto loginDto)
         {
             var token = await _userInterface.LoginUser(loginDto);
             if (token != null)
@@ -79,7 +77,7 @@ namespace AuthService.Controllers
         //get all post of this user
         [HttpGet("getUserPosts")]
         [Authorize]
-        public async Task<ActionResult<responsedto>> GetPostsOfThisUser()
+        public async Task<ActionResult<ResponseDto>> GetPostsOfThisUser()
         {
             //get the user id from the token
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
