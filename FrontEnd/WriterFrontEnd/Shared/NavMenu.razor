@@ -1,4 +1,6 @@
-﻿@inject NavigationManager navManager
+﻿@using WriterFrontEnd.Services.Auth
+@using WriterFrontEnd.Models.Authentication
+@inject NavigationManager navManager
 @*@inject AuthenticationStateProvider authProvider*@
 @inject NavigationManager navigationManager
 @inject ILocalStorageService localStorage
@@ -24,9 +26,10 @@
             </ul>
         </div>
         <div class="user-login">
-            <span>Welcome, @*@user.*@Username</span>
+            
             <AuthorizeView>
                 <Authorized>
+                    <span>Welcome, @user.Email</span>
                     <button class="btn btn-dark" @onclick="logout">Logout</button>
                 </Authorized>
                 <NotAuthorized>
@@ -43,22 +46,22 @@
 </style>
 
 @code {
-    //private LoginRequestDto user = new LoginRequestDto();
+    private LoginDto user = new LoginDto();
 
     private void register()
     {
-        navManager.NavigateTo("register");
+        navManager.NavigateTo("RegisterUser");
     }
 
     private void login()
     {
-        navManager.NavigateTo("login");
+        navManager.NavigateTo("Log");
     }
 
     private async Task logout()
     {
         await localStorage.RemoveItemAsync("authToken");
         //await authProvider.GetAuthenticationStateAsync();
-        navManager.NavigateTo("/");
+        navManager.NavigateTo("");
     }
 }

@@ -1,6 +1,7 @@
 ﻿@using WriterFrontEnd.Models.Comments;
+@using WriterFrontEnd.Services.PostServ;
 @inject ICommentInterface commentInterface
-@inject IPostInterface postInterface
+@inject IPostsInterface postInterface
 @inject NavigationManager navManager
 
 
@@ -20,6 +21,6 @@
 @code {
 
     [Parameter]
-    public Comment? comment { get; set; };
+    public Comment? comment { get; set; }
 
 }

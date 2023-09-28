@@ -3,14 +3,14 @@ using WriterFrontEnd.Models;
 using WriterFrontEnd.Models.Posts;
 using System.Text;
 
-namespace WriterFrontEnd.Services.Posts
+namespace WriterFrontEnd.Services.PostServ
 {
 
-    public class PostService : IPostInterface
+    public class PostsService : IPostsInterface
     {
         private readonly HttpClient _httpClient;
         private readonly string BASEURL = "https://localhost:7676";
-        public PostService(HttpClient httpClient)
+        public PostsService(HttpClient httpClient)
         {
 
             _httpClient = httpClient;

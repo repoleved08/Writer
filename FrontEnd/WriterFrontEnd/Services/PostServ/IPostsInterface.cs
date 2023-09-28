@@ -1,10 +1,9 @@
-﻿
-using WriterFrontEnd.Models;
+﻿using WriterFrontEnd.Models;
 using WriterFrontEnd.Models.Posts;
 
-namespace WriterFrontEnd.Services.Posts
+namespace WriterFrontEnd.Services.PostServ
 {
-    public interface IPostInterface
+    public interface IPostsInterface
     {
         Task<List<Post>> GetPostsAsync();
 

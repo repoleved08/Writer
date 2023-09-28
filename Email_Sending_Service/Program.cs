@@ -1,8 +1,8 @@
+using Email_Sending_Service.Data;
+using Email_Sending_Service.Extensions;
+using Email_Sending_Service.Messaging;
 using Microsoft.EntityFrameworkCore;
-using ServicePost.Data;
-using ServicePost.Extensions;
-using ServicePost.Services;
-using ServicePost.Services.IServices;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,30 +12,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<IAzureMessagingInterface, AzureMessageBusConsumer>();
 
 //connect to database
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-
-//register services
-builder.Services.AddScoped<IPostInterface, PostService>();
-
-//Register AutoMapper
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-// cors
-builder.Services.AddCors(options => options.AddPolicy("policy0", build =>
-{
-    build.AllowAnyOrigin();
-    build.AllowAnyHeader();
-    build.AllowAnyMethod();
-}));
-
-//custom builder services
-builder.AddAppAuthentication();
-builder.AddSwaggenGenExtension();
 
 var app = builder.Build();
 
@@ -46,13 +29,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 app.UseHttpsRedirection();
-app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.UseCors("policy0");
+app.UseMigration();
 
 app.MapControllers();
 
