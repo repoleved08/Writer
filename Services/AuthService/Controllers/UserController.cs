@@ -1,12 +1,10 @@
 ﻿using AuthService.Models.RequestsDto;
 using AuthService.Models.ResponseDto;
 using AuthService.Services.IServices;
-using Azure;
 using MessageBusLib;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
+using SenderBus;
 using System.Security.Claims;
 
 
@@ -16,35 +14,47 @@ namespace AuthService.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-       private readonly IUserInterface _userInterface;
-       private readonly IConfiguration _configuration;
-       private readonly responsedto _response;
-       private readonly IMessageBus _messageBus;
+        private readonly IUserInterface _userInterface;
+        private readonly IConfiguration _configuration;
+        private readonly ResponseDto _response;
+        private readonly IMessageBus _messageBus;
+        private readonly ISenderBus _senderBus;
 
 
-    public UserController(IUserInterface userInterface, IConfiguration configuration, IMessageBus messageBus)
+        public UserController(IUserInterface userInterface, IConfiguration configuration, ISenderBus senderBus)
         {
-              _userInterface = userInterface;
+            _userInterface = userInterface;
             _configuration = configuration;
-            _messageBus = messageBus;
-            _response = new responsedto();
+            _senderBus = senderBus;
+            _response = new ResponseDto();
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<responsedto>> AddUSer(RegistrationDto Registration)
+        public async Task<ActionResult<ResponseDto>> AddUSer(RegistrationDto Registration)
         {
             var message = await _userInterface.RegisterUser(Registration);
             if (message == "User created successfully!")
-            { 
-                var queueName = _configuration.GetSection("Queues:RegisterUser").Get<string>();
-                var messagequeue = new UserMessage()
+            {
+                //start
+                var queueName = _configuration.GetSection("QueueTopic:RegU").Get<string>();
+                var messageToQueue = new UserMessage()
                 {
                     Email = Registration.Email,
                     Name = Registration.UserName
                 };
-                await _messageBus.PublishMessage(messagequeue, queueName);
+                await _senderBus.PublishMessage(messageToQueue, queueName);
                 _response.IsSuccess = true;
                 _response.Message = message;
+                //end
+                //var queueName = _configuration.GetSection("Queues:RegisterUser").Get<string>();
+                //var messagequeue = new UserMessage()
+                //{
+                //    Email = Registration.Email,
+                //    Name = Registration.UserName
+                //};
+                //await _messageBus.PublishMessage(messagequeue, queueName);
+                //_response.IsSuccess = true;
+                //_response.Message = message;
                 return Ok(_response);
             }
             else
@@ -56,10 +66,8 @@ namespace AuthService.Controllers
             return Ok(_response);
         }
 
-
         [HttpPost("login")]
-
-        public async Task<ActionResult<responsedto>> LoginUser(LoginDto loginDto)
+        public async Task<ActionResult<ResponseDto>> LoginUser(LoginDto loginDto)
         {
             var token = await _userInterface.LoginUser(loginDto);
             if (token != null)
@@ -79,7 +87,7 @@ namespace AuthService.Controllers
         //get all post of this user
         [HttpGet("getUserPosts")]
         [Authorize]
-        public async Task<ActionResult<responsedto>> GetPostsOfThisUser()
+        public async Task<ActionResult<ResponseDto>> GetPostsOfThisUser()
         {
             //get the user id from the token
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);

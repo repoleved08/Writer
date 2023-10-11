@@ -1,6 +1,6 @@
 ﻿namespace AuthService.Models.ResponseDto
 {
-    public class responsedto
+    public class ResponseDto
     {
         public object? Result { get; set; }
 

@@ -6,6 +6,7 @@ using AuthService.Utitlity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MessageBusLib;
+using SenderBus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();  
 builder.Services.AddScoped<IUserInterface, UserService>();
 builder.Services.AddScoped<IMessageBus, MessageBus>();
+//mine
+builder.Services.AddScoped<ISenderBus, MessageBusService>();
 
 //cors
 builder.Services.AddCors(options => options.AddPolicy("policy0", build =>

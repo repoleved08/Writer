@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Integration\MessageBusLib\MessageBusLib.csproj" />
+    <ProjectReference Include="..\..\SenderBus\SenderBus.csproj" />
    
   </ItemGroup>
 

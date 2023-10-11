@@ -1,0 +1,26 @@
+﻿@using WriterFrontEnd.Models.Comments;
+@using WriterFrontEnd.Services.PostServ;
+@inject ICommentInterface commentInterface
+@inject IPostsInterface postInterface
+@inject NavigationManager navManager
+
+
+
+<div class="comment card mb-3">
+    <div class="card-body">
+        <p class="card-text">@comment.Body</p>
+
+
+
+    </div>
+</div>
+
+
+
+
+@code {
+
+    [Parameter]
+    public Comment? comment { get; set; }
+
+}

@@ -7,9 +7,8 @@ namespace AuthService.Services.IServices
     {
         Task<string> RegisterUser(RegistrationDto registrationDto);
 
-        Task<string> LoginUser(LoginDto loginDto);
+        Task<LoginResponseDto> LoginUser(LoginDto loginDto);
 
-        //get all post of this user
         Task<IEnumerable<PostDto>> GetPostsOfThisUser();
     }
 }
